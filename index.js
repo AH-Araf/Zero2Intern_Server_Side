@@ -44,6 +44,7 @@ async function run() {
     try {
         await client.connect();
         const usersCollection = client.db("ZtoI").collection("users");
+        const internCollection = client.db("ZtoI").collection("allInterns");
 
         //Users----------------------------------------------------------------
 
@@ -81,6 +82,36 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+
+
+        // add and get interns ------------------------------------------------------------------------------
+        app.post('/interns', async (req, res) => {
+            const review = req.body;
+            const c = await internCollection.insertOne(review);
+            res.send(c);
+        });
+        app.get('/interns', async (req, res) => {
+            let query = {};
+            const cursor = internCollection.find(query).limit(0).sort({$natural:-1});
+            const a = await cursor.toArray();
+            res.send(a); 
+        });
+        app.get('/internLimit', async (req, res) => {
+            let query = {};
+            const cursor = internCollection.find(query).limit(3).sort({$natural:-1}) ;
+            const serve = await cursor.toArray();
+            res.send(serve);
+        });
+        // app.get('/interns/:id', async (req, res) => {
+        //     // const id = req.params.id;
+        //     // const query = { _id: ObjectId(id) };
+        //     let id = arg.query.id
+        //     const nid = new BSON.ObjectId(id)
+        //     const a = await internCollection.findOne({ _id:  id});
+        //     res.send(a);
+        // });
+
+
 
 
         // await client.db("admin").command({ ping: 1 });
